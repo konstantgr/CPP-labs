@@ -1,4 +1,3 @@
-cd ..
 git checkout stg
 
 echo "======================"
