@@ -6,7 +6,7 @@ echo "======================"
 
 git merge stg
 
-timestamp=$(date +"%A %m %d %Y %H:%M")
+timestamp=$(date +"%m_%d_%Y__%H_%M")
 echo "======================"
 echo "Tagging as ${timestamp}"
 echo "======================"
