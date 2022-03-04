@@ -6,7 +6,7 @@ echo "======================"
 
 git merge dev
 
-timestamp=$(date +”%d-%b-%Y”)
+timestamp=$(date +"%A %m %d %Y %H:%M")
 echo "======================"
 echo "Tagging as ${timestamp}"
 echo "======================"
