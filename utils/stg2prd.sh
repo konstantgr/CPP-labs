@@ -15,7 +15,7 @@ git tag -a "$timestamp" -m "stg2prd"
 echo "======================"
 echo "Pushing commits and tags"
 echo "======================"
-git push --set-upstream origin stg
+git push --set-upstream origin prd
 git push --tags
 
 echo "======================"
