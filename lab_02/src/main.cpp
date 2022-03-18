@@ -12,8 +12,9 @@ double f (double x) {
 
 int main (void) {
   int n;
-  double res = 1;
-  
+  double res, fin;
+ 
+ 
   while (true) {
     cin >> n;
 
@@ -24,8 +25,9 @@ int main (void) {
     
     auto start = high_resolution_clock::now();
  
+    res = 1;
     for (int i = 0; i < n; i++)
-      res += f(res);
+      fin = f(res);
     cout << res << endl;
 
     auto stop = high_resolution_clock::now();
