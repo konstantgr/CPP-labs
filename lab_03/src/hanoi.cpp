@@ -1,21 +1,33 @@
 #include <iostream>
-
+#include <string>
+#include <vector>
 using i64 = long long;
 using namespace std;
 
-void towerOfHanoi(i64 n, char from_rod,
-                    char to_rod, char aux_rod) {
-    if (!n) return;
 
-    towerOfHanoi(n - 1, from_rod, aux_rod, to_rod);
-    cout << "Move disk " << n << " from rod " << from_rod <<
-                                " to rod " << to_rod << endl;
-    towerOfHanoi(n - 1, aux_rod, to_rod, from_rod);
+vector<string> hanoi(i64 n, int i, int k, vector<string> res) {
+    int tmp;
+
+    if (n == 1) {
+        res.push_back("Move disk 1 from pin " + to_string(i) + " to " + to_string(k));
+        return res;
+    }
+    else {
+        tmp = 6 - i - k;
+        res = hanoi(n - 1, i, tmp, res);
+        res.push_back("Move disk " + to_string(n) + " from pin " + to_string(i) + " to " + to_string(k));
+        res = hanoi(n - 1, tmp, k, res);
+        return res;
+    }
 }
  
 int main(int argc, char** argv)
 {
-    i64 n = 2;
-    towerOfHanoi(n, 'A', 'C', 'B');
+    i64 n = 3;
+    vector<string> res;
+    res = hanoi(n, 1, 2, res);
+
+    for (auto i: res) cout << i << endl;
+
     return 0;
 }
