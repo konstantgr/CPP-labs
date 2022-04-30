@@ -12,6 +12,6 @@ num_processed=6
 let "half = iterations/$num_processed"
 for i in $(seq 1 $num_processed); 
 do 
-./build/threads_processes.out $half simple &
+./build/threads_processes.out $half threads &
 done
 
