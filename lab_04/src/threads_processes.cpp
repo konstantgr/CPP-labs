@@ -1,5 +1,10 @@
 #include <iostream>
+#include <cmath>
+#include <sstream>
+#include <string>
+#include <chrono>
 #include <thread>
+#include <vector>
 
 using i64 = long long;
 using namespace std;
@@ -15,11 +20,6 @@ inline constexpr std::uint32_t fnv1a(const char* str, std::uint32_t hash = 21661
     return *str ? fnv1a(str + 1, (hash ^ *str) * 16777619ULL) : hash;
 }
 
-/* 
-Formula 1: f(x) = x ^2- x ^2+ x *4- x *5+ x + x
-Formula 2: f(x) = x + x 
-*/
-
 i64 f1(i64 x) {
   return pow(x, 2) - pow(x, 2) + x * 4 - x * 5 + x + x;
 }
@@ -28,8 +28,12 @@ i64 f2(i64 x) {
   return x + x;
 }
 
-i64 f3_simple(i64 x) {
+i64 f3(i64 x) {
   return f1(x) + f2(x) - f1(x);
+}
+
+void thread_function(int n, float x, i64 (*func)(i64)) {
+    for (int i = 0; i < n; i++) { func(x); }
 }
 
 tuple<i64, i64, i64> simple_loop (i64 iterations) {
@@ -38,23 +42,30 @@ tuple<i64, i64, i64> simple_loop (i64 iterations) {
   for (int i = 0; i < iterations; i++) {
     x1 = f1(x1);
     x2 = f2(1);
-    x3 = f3_simple(1);
+    x3 = f3(1);
   }
   return make_tuple(x1, x2, x3);
 }
 
 tuple<i64, i64, i64> threads_loop (i64 iterations) {
-  i64 x1 = 1, x2, x3;
+  i64 x = 1;
+  i64 n_threads = 4;
 
-  for (int i = 0; i < iterations; i++) {
-    std::thread thr1(f1, x1);
-    std::thread thr2(f2, 1);
-    std::thread thr3(f3_simple, 1);
-    thr1.join();
-    thr2.join();
-    thr3.join();
+  std::vector<std::thread> threads_f1, threads_f2, threads_f3;
+
+  for (int t = 0; t < n_threads; t++) {
+      threads_f1.push_back(std::thread(thread_function, iterations / n_threads, x, f1));
+      threads_f2.push_back(std::thread(thread_function, iterations / n_threads, x, f2));
+      threads_f3.push_back(std::thread(thread_function, iterations / n_threads, x, f3));
   }
-  return make_tuple(x1, x2, x3);
+  
+  for (int t = 0; t < n_threads; t++) {
+      threads_f1[t].join();
+      threads_f2[t].join();
+      threads_f3[t].join();
+  }
+
+  return make_tuple(x, x, x);
 }
 
 int main (int argc, char** argv) {
@@ -75,7 +86,6 @@ int main (int argc, char** argv) {
   auto diff = end - start;
 
   cout << chrono::duration <double> (diff).count() << " s" << endl;
-  cout << "x1: " << x1 << endl << "x2: " << x2 << endl << "x3: " << x3 << endl;
+  
   return 0;
 }
-
