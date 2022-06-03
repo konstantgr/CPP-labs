@@ -178,7 +178,7 @@ public:
 
         while (!actions.empty()) {
             action_pair = splitAction(actions.front());
-            if (action_pair.first.find("loop") == 0) {
+            if (action_pair.first.find("loop") != string::npos) {
                 // cout << stoi(splitAction(action_pair.first, " ").second) << endl;
                 for (int i = 0; i < stoi(splitAction(action_pair.first, " ").second); i++) {
                     do_action(action_pair.second);
@@ -228,7 +228,7 @@ public:
             func = &LoLanguage::threadFunction;
 
             action_pair = splitAction(actions.front());
-            if (action_pair.first.find("loop") == 0) {
+            if (action_pair.first.find("loop") != string::npos) {
                 func = &LoLanguage::loopThreadFunction;
                 threads.push_back(thread(func, *this, actions.front(), cnt)); // do_action(actions.front());
             }
@@ -249,9 +249,15 @@ public:
         string flag = action_pair.first;
         string input = action_pair.second;
         string a, b;
+        int loop_num = 0;
 
         if (thread)
             cout << "[" << thread << "]" << endl;
+
+        if (splitAction(action).first.find("loop") != string::npos) {
+            loop_num = stoi(splitAction(splitAction(action).first, " ").second);
+            flag = splitAction(splitAction(action).first, " ").first;
+        }
 
         switch (hashstring(flag.c_str())) {
             case hashstring("+"): {
@@ -295,8 +301,18 @@ public:
                 break;
             }
             case hashstring("to_cli"): {
+                cout << "IM HERE" << endl;
                 CliAction A(input);
                 cout << A.getOutput() << endl;
+                break;
+            }
+            case hashstring("loop"): {
+                for (int i = 0; i < loop_num; i++)
+                    do_action(input, thread);
+                break;
+            }
+            default: {
+                cout << "Error, bad input, quitting\n";
                 break;
             }
         }
@@ -314,16 +330,20 @@ int main(void) {
     loop.run(A);
     cout << "=======" << endl;
 
-    LoLanguage lang = LoLanguage("src/code.txt");
+    LoLanguage lang = LoLanguage("src/code2.txt");
+    cout << "Parallel" << endl;
     lang.do_all_actions_parallel();
+    cout << "=======" << endl;
 
-    string line;
+    // lang.do_all_actions();
 
-    while (getline(cin, line)) {
-        lang.do_action(line);
-        if (line == "exit") { break; }
+    // string line;
 
-    }
+    // while (getline(cin, line)) {
+    //     lang.do_action(line);
+    //     if (line == "exit") { break; }
+
+    // }
     
    return 0;
 }
